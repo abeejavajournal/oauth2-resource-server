@@ -1,0 +1,72 @@
+spring:
+  application:
+    name: oauth2-resource-server
+
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          # JWT decoder configuration
+          # For local development with Keycloak
+          issuer-uri: ${SPRING_SECURITY_OAUTH2_RESOURCESERVER_JWT_ISSUER_URI:http://localhost:8080/realms/demo}
+          jwk-set-uri: ${SPRING_SECURITY_OAUTH2_RESOURCESERVER_JWT_JWK_SET_URI:http://localhost:8080/realms/demo/protocol/openid-connect/certs}
+
+          # Alternative: Direct public key configuration
+          # public-key-location: classpath:public-key.pem
+
+        # Opaque token introspection (alternative to JWT)
+        # opaquetoken:
+        #   introspection-uri: https://auth.example.com/oauth2/introspect
+        #   client-id: resource-server-client
+        #   client-secret: ${CLIENT_SECRET}
+
+# Server configuration
+server:
+  port: 8081
+  servlet:
+    context-path: /api
+  error:
+    include-message: always
+    include-binding-errors: always
+
+# Actuator configuration
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health, info, metrics
+  endpoint:
+    health:
+      show-details: when-authorized
+
+# Logging configuration
+logging:
+  level:
+    org.springframework.security: DEBUG
+    org.springframework.security.oauth2: DEBUG
+    com.abeejavajournal: DEBUG
+  pattern:
+    console: "%d{HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n"
+
+# Application specific properties
+app:
+  security:
+    jwt:
+      audience: api://default
+      scopes:
+        read: "Read access to resources"
+        write: "Write access to resources"
+        admin: "Administrative access"
+    cors:
+      allowed-origins: 
+        - http://localhost:3000
+        - https://app.example.com
+      allowed-methods: 
+        - GET
+        - POST
+        - PUT
+        - DELETE
+        - OPTIONS
+      allowed-headers: "*"
+      allow-credentials: true
+      max-age: 3600

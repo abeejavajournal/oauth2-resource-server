@@ -1,0 +1,37 @@
+spring:
+  application:
+    name: oauth2-resource-server-test
+
+  # Allow bean definition overriding for tests
+  main:
+    allow-bean-definition-overriding: true
+
+  # For tests, we don't configure the issuer-uri to avoid connecting to a real auth server
+  # Instead, we use Spring Security Test's JWT mocking capabilities
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          # Use a dummy issuer for tests - won't actually connect
+          issuer-uri: http://localhost:9999
+
+# Server configuration for tests
+server:
+  port: 0  # Random port for tests
+  # No context path for tests - MockMvc doesn't always honor it
+
+# Application specific properties
+app:
+  security:
+    jwt:
+      audience: api://default
+      scopes:
+        read: "Read access to resources"
+        write: "Write access to resources"
+        admin: "Administrative access"
+
+# Logging configuration
+logging:
+  level:
+    org.springframework.security: INFO
+    com.abeejavajournal: INFO
